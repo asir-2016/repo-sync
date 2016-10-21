@@ -15,7 +15,7 @@ usage(){
 
 list_files(){
 	REPO_DIR="$1"
-	find $REPO_DIR -type f -printf "%P\n"
+	find $REPO_DIR -type f -printf %P\n
 }
 
 do_status(){
@@ -102,7 +102,8 @@ do_untrack_file(){
 
 # do some tests
 
-[ $# -lt 2 ] || usage
+[ $# -ge 2 ] || usage
+
 which rsync >/dev/null || die "'rsync' utility not found. Please install the package"
 
 PROYECT_NAME="$1"
@@ -121,7 +122,7 @@ while [ "$CONTINUE_SEARCH" = "Y" ] ; do
 		--force)
 			FORCE_UPDATE="Y"
 			shift
-			;;;
+			;;
 		--no-backup)
 			DO_BACKUP="N"
 			shift
@@ -183,47 +184,4 @@ case "$ACTION" in
 		;;
 esac
 
-
-
-		
- if exists "files" directory
-[ -d "./files" ] || die "'files' directory not found. Please run this script inside the correct folder"
-
-# search for 'force' option
-if [ "$1" = "--force" ]; then
-	FORCE_UPDATE="Y"
-	shift
-else
-	FORCE_UPDATE="N"
-fi
-
-# test required parameter
-[ "$1" ] || usage
-
-REMOTE_SERVER="$1"
-TIMESTAMP="$(date "+%F_%H:%M")"
-BACKUP_DIR="/BACKUP/$TIMESTAMP"
-CMD="rsync -avx -b --backup-dir=$BACKUP_DIR ./files/ root@$REMOTE_SERVER:/"
-echo "Remote server: $REMOTE_SERVER"
-
-echo "Files to update:"
-( cd files; tree )
-
-echo "Command to execute: $CMD"
-echo "\n **May the Force be with you**\n"
-
-if [ "$FORCE_UPDATE" != "Y" ] ; then
-	echo "Proceed (y/n)?:"
-	read a
-	if [ "$a" != "y" ] ; then
-		die "ABORTED!!!! Maybe next time, folk ;-)"
-	fi
-fi
-if $CMD ; then
-	echo "Update successfully. Directory "$BACKUP_DIR" in the remote server contains a backup of updated files"
-else
-	die "Some ERRORS appeared!!!!"
-fi 
-
 exit 0
-
